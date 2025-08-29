@@ -32,6 +32,25 @@ export OPENAI_API_KEY=your_key_here
 export DATABASE_URL=postgres://user:pass@localhost:5432/aicsa   # optional
 ```
 
+### Database setup
+
+The backend uses PostgreSQL via Sequelize to persist query data. To create a new
+database and attach it to the backend:
+
+1. Ensure PostgreSQL is running and set `DATABASE_URL` to your connection
+   string. For example:
+   ```bash
+   export DATABASE_URL=postgres://user:pass@localhost:5432/aicsa
+   ```
+2. From the `backend` directory, create the database and run the migrations:
+   ```bash
+   cd backend
+   npx sequelize-cli db:create    # creates the database in DATABASE_URL
+   npm run migrate                # applies table migrations
+   ```
+   You can adjust the default connection in `backend/config/config.js` or by
+   changing `DATABASE_URL`.
+
 ## API overview
 
 - `POST /api/upload` – multipart form-data with field `file` (PDF) → `{ text }`

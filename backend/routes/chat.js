@@ -4,23 +4,31 @@ const Query = require('../models/query');
 const openai = require('../services/openai');
 
 router.post('/', async (req, res) => {
-  const { question } = req.body;
+  const { question, pdfText } = req.body;
   let answer = 'Placeholder answer';
   let sentiment = 'neutral';
   let audio = null;
 
   try {
     if (openai) {
+      const messages = [
+        {
+          role: 'system',
+          content:
+            'You are a helpful support agent. Reply in JSON with keys answer and sentiment (angry, neutral, happy).',
+        },
+      ];
+      if (pdfText) {
+        messages.push({
+          role: 'system',
+          content: `Document content:\n${pdfText.slice(0, 2000)}`,
+        });
+      }
+      messages.push({ role: 'user', content: question });
+
       const completion = await openai.chat.completions.create({
         model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content:
-              'You are a helpful support agent. Reply in JSON with keys answer and sentiment (angry, neutral, happy).',
-          },
-          { role: 'user', content: question },
-        ],
+        messages,
         response_format: {
           type: 'json_schema',
           json_schema: {

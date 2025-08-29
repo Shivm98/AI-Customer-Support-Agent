@@ -6,7 +6,25 @@ import { FiSend, FiUser, FiCpu } from 'react-icons/fi';
 export default function Chat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [pdfText, setPdfText] = useState('');
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
+
+  const handleUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const res = await fetch(`${API_BASE}/api/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      setPdfText(data.text || '');
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const sendMessage = async () => {
     if (!input) return;
@@ -14,7 +32,7 @@ export default function Chat() {
       const res = await fetch(`${API_BASE}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: input }),
+        body: JSON.stringify({ question: input, pdfText }),
       });
       const data = await res.json();
       if (data.audio) {
@@ -34,6 +52,12 @@ export default function Chat() {
 
   return (
     <div className="flex flex-col h-full">
+      <input
+        type="file"
+        accept="application/pdf"
+        onChange={handleUpload}
+        className="mb-2"
+      />
       <div className="flex-1 overflow-y-auto p-4 mb-4 bg-gray-800/50 rounded-lg space-y-2">
         {messages.map((m, idx) => (
           <motion.div

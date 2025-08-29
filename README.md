@@ -1,6 +1,6 @@
 # AI Customer Support Agent
 
-This repository contains a prototype for an AI-powered customer support agent. It includes a Next.js 14 frontend using Tailwind CSS and Framer Motion and an Express backend with Sequelize and PostgreSQL.
+This repository contains a prototype for an AI-powered customer support agent. It includes a Next.js 14 frontend using Tailwind CSS and Framer Motion and an Express backend with Sequelize and PostgreSQL. Users can optionally upload a PDF which is parsed and used as context when answering questions.
 
 ## Architecture
 
@@ -34,16 +34,18 @@ export DATABASE_URL=postgres://user:pass@localhost:5432/aicsa   # optional
 
 ## API overview
 
-- `POST /api/chat` – body `{ question: string }` → `{ answer, sentiment, audio }`
+- `POST /api/upload` – multipart form-data with field `file` (PDF) → `{ text }`
+- `POST /api/chat` – body `{ question: string, pdfText?: string }` → `{ answer, sentiment, audio }`
 - `GET /api/analytics` – returns counts of total, happy, angry, neutral, and the top queried questions
 
 ## How it works
 
 1. The user types a question in the frontend chat component.
-2. The frontend POSTs the question to `/api/chat` on the backend.
-3. The backend asks OpenAI for an answer and sentiment and stores the record in Postgres.
-4. The backend returns the answer, sentiment, and optional speech audio to the frontend.
-5. The frontend displays the conversation and plays the audio. The dashboard fetches `/api/analytics` to show usage statistics.
+2. The user may upload a PDF which the frontend sends to `/api/upload`; the backend extracts its text.
+3. The frontend POSTs the question (and extracted text if available) to `/api/chat` on the backend.
+4. The backend asks OpenAI for an answer and sentiment using the document text as context and stores the record in Postgres.
+5. The backend returns the answer, sentiment, and optional speech audio to the frontend.
+6. The frontend displays the conversation and plays the audio. The dashboard fetches `/api/analytics` to show usage statistics.
 
 ## Testing
 

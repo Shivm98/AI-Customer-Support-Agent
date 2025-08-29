@@ -3,33 +3,31 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 
 export default function Chat() {
-  // Pre-populate with dummy messages so the UI can be previewed without a backend.
-  const [messages, setMessages] = useState([
-    { role: 'user', text: 'What is your refund policy?' },
-    {
-      role: 'bot',
-      text: 'You can request a refund within 30 days of purchase. Please provide your order ID.',
-    },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
   const sendMessage = async () => {
     if (!input) return;
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question: input }),
-    });
-    const data = await res.json();
-    if (data.audio) {
-      const audio = new Audio(`data:audio/mp3;base64,${data.audio}`);
-      audio.play();
+    try {
+      const res = await fetch(`${API_BASE}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: input }),
+      });
+      const data = await res.json();
+      if (data.audio) {
+        const audio = new Audio(`data:audio/mp3;base64,${data.audio}`);
+        audio.play();
+      }
+      setMessages([
+        ...messages,
+        { role: 'user', text: input },
+        { role: 'bot', text: data.answer },
+      ]);
+    } catch (err) {
+      console.error(err);
     }
-    setMessages([
-      ...messages,
-      { role: 'user', text: input },
-      { role: 'bot', text: data.answer },
-    ]);
     setInput('');
   };
 

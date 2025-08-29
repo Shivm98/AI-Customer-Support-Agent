@@ -1,6 +1,7 @@
 "use client";
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { FiSend, FiUser, FiCpu } from 'react-icons/fi';
 
 export default function Chat() {
   const [messages, setMessages] = useState([]);
@@ -32,30 +33,43 @@ export default function Chat() {
   };
 
   return (
-    <div>
-      <div className="h-64 overflow-y-auto border p-2 mb-4">
+    <div className="flex flex-col h-full">
+      <div className="flex-1 overflow-y-auto p-4 mb-4 bg-gray-800/50 rounded-lg space-y-2">
         {messages.map((m, idx) => (
           <motion.div
             key={idx}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`my-1 ${m.role === 'user' ? 'text-right' : 'text-left'}`}
+            className={`flex items-end gap-2 ${
+              m.role === 'user' ? 'justify-end' : 'justify-start'
+            }`}
           >
-            <span className="inline-block px-2 py-1 rounded bg-gray-200">{m.text}</span>
+            {m.role !== 'user' && <FiCpu className="text-xl text-blue-400" />}
+            <span
+              className={`px-3 py-2 rounded-lg max-w-[70%] break-words transition-colors ${
+                m.role === 'user'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-700 text-gray-100'
+              }`}
+            >
+              {m.text}
+            </span>
+            {m.role === 'user' && <FiUser className="text-xl text-gray-400" />}
           </motion.div>
         ))}
       </div>
-      <div className="flex">
+      <div className="flex items-center">
         <input
-          className="flex-1 border px-2 py-1"
+          className="flex-1 px-3 py-2 bg-gray-700 text-gray-100 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
         />
         <button
           onClick={sendMessage}
-          className="ml-2 px-4 py-1 bg-blue-500 text-white rounded"
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-r-md transition-colors flex items-center gap-1"
         >
-          Send
+          <FiSend />
         </button>
       </div>
     </div>

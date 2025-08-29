@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import { motion } from 'framer-motion';
+import { FiBarChart2 } from 'react-icons/fi';
 
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
@@ -28,10 +30,16 @@ export default function Dashboard() {
 
   if (!stats) {
     return (
-      <div className="p-4 border rounded mt-8 bg-white">
-        <h2 className="text-xl font-semibold mb-4">Analytics</h2>
-        <p>Loading...</p>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="p-6 border border-gray-700 rounded-lg bg-gray-800 shadow"
+      >
+        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <FiBarChart2 className="text-blue-400" /> Analytics
+        </h2>
+        <p className="text-gray-300">Loading...</p>
+      </motion.div>
     );
   }
 
@@ -44,9 +52,15 @@ export default function Dashboard() {
   const COLORS = ['#f87171', '#34d399', '#60a5fa'];
 
   return (
-    <div className="p-4 border rounded mt-8 bg-white">
-      <h2 className="text-xl font-semibold mb-4">Analytics</h2>
-      <p className="mb-4">Total queries answered: {stats.total}</p>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="p-6 border border-gray-700 rounded-lg bg-gray-800 shadow flex flex-col h-full"
+    >
+      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+        <FiBarChart2 className="text-blue-400" /> Analytics
+      </h2>
+      <p className="mb-4 text-gray-300">Total queries answered: {stats.total}</p>
       <div className="h-48 mb-4">
         <ResponsiveContainer>
           <PieChart>
@@ -65,11 +79,11 @@ export default function Dashboard() {
         </ResponsiveContainer>
       </div>
       <h3 className="font-medium mb-2">Top queries</h3>
-      <ul className="list-disc ml-6">
+      <ul className="list-disc ml-6 space-y-1 text-gray-300">
         {stats.topQueries.map((q, idx) => (
           <li key={idx}>{q}</li>
         ))}
       </ul>
-    </div>
+    </motion.div>
   );
 }

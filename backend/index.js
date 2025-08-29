@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload');
@@ -30,6 +31,11 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/analytics', analyticsRoutes);
 
 const PORT = process.env.PORT || 3001;
-sequelize.sync().then(() => {
-  app.listen(PORT, () => console.log(`Server running on ${PORT}`));
-});
+sequelize
+  .authenticate()
+  .then(() => {
+    app.listen(PORT, () => console.log(`Server running on ${PORT}`));
+  })
+  .catch((err) => {
+    console.error('Unable to connect to database:', err);
+  });
